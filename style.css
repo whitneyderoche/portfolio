@@ -1,6 +1,30 @@
+img {
+    max-width: 100%;
+    height: auto;
+    display: block
+}
+
 body {
+    margin: 1.5rem;
+  }
+  @media (min-width: 720px) {
+    body { margin: 2.5rem auto; max-width: 60rem; }
+  }
+  
+  /* Give the home/hero photo a responsive target size range */
+  .hero-photo {
+    /* scales between 200px and 480px, based on viewport width */
+    width: clamp(200px, 40vw, 480px);
+    border-radius: 8px;
+
     /* Set line height to 1.5 times the font size
-         and use the OS’s UI font as the website font
-       */
+    and use the OS’s UI font as the website font
+    */
     font: 100%/1.5 system-ui;
+  }
+
+  nav {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
