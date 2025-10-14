@@ -5,12 +5,17 @@ img {
 }
 
 body {
-    margin: 1.5rem;
-  }
+        max-width: 100ch;
+        margin-inline: auto;
+        padding: 1rem;
+        line-height: 1.6;
+    }
   @media (min-width: 720px) {
     body { margin: 2.5rem auto; max-width: 60rem; }
   }
   
+  img { max-width: 100%; height: auto; display: block; }
+
   /* Give the home/hero photo a responsive target size range */
   .hero-photo {
     /* scales between 200px and 480px, based on viewport width */
@@ -23,8 +28,226 @@ body {
     font: 100%/1.5 system-ui;
   }
 
-  nav {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+:root {
+    --color-accent: oklch(60% 0.12 240); /* medium blue */
+    accent-color: var(--color-accent);
   }
+  @supports not (color: oklch(50% 0 0)) {
+    :root {
+      --color-accent: #3366ff; /* fallback blue */
+    }
+  }
+
+/* A cool-gray token with a hex fallback for older browsers */
+:root {
+    --cool-gray: oklch(80% 0.03 200);
+  }
+  @supports not (color: oklch(50% 0 0)) {
+    :root { --cool-gray: #d9d9df; } /* fallback */
+  }
+
+/* Step 2.1: treat the UL/LI as layout-free wrappers */
+nav ul,
+nav li {
+  display: contents;   /* keeps correct HTML semantics without extra boxes/bullets */
+}
+
+/* Step 2.2: Flexbox layout so items share the row evenly */
+nav {
+  display: flex;
+  border-bottom: 1px solid var(--cool-gray);
+  margin-bottom: 1rem;
+}
+
+/* Make each link take equal width and center its text */
+nav a {
+  flex: 1;                 /* equal widths for all items */
+  text-align: center;
+  padding: 0.5em 0.75em;          /* Step 2.3: comfy tappable area */
+  text-decoration: none;   /* no underline */
+  color: inherit;          /* inherit the page text color */
+}
+
+nav a.current {
+    font-weight: 700;
+    border-bottom: 0.4em solid var(--cool-gray);
+    padding-bottom: calc(0.5em - 0.4em); /* keeps overall height steady */
+  }
+
+/* Hover state: thick underline in accent color */
+nav a:hover {
+    border-bottom: 0.4em solid var(--color-accent);
+    padding-bottom: calc(0.5em - 0.4em);
+  }
+
+/* Make form controls inherit the site font, size, line-height, etc. */
+input, textarea, button, select {
+    font: inherit;
+  }
+/* 3.1 Typography: keep this (applies to both layouts) */
+input, textarea, button, select { font: inherit; }
+
+/* 3.3 Grid form: labels on the left, fields on the right */
+.contact-form {
+  display: grid;
+  grid-template-columns: auto 1fr; /* left column fits label text; right column takes remaining space */
+  gap: 1em;                        /* space between rows/cols */
+  align-items: start;              /* top-align controls with multi-line labels */
+}
+
+/* Each field row participates in the parent grid using subgrid */
+.contact-form .field {
+  display: grid;
+  grid-template-columns: subgrid;  /* inherit the parent’s columns */
+  grid-column: 1 / -1;             /* the whole row spans both columns */
+}
+
+/* Place the label text in the left column, control in the right */
+.field .label-text {
+  grid-column: 1;
+  align-self: center;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  grid-column: 2;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.75rem;
+}
+
+/* Button spans both columns and sits on the left by default */
+.contact-form button {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+  padding: 0.6rem 1rem;
+}
+
+/* Responsive: stack to one column on narrow screens */
+@media (max-width: 520px) {
+  .contact-form {
+    grid-template-columns: 1fr;     /* one column */
+  }
+  .field .label-text,
+  .field input,
+  .field textarea {
+    grid-column: 1;                 /* everything flows in one column */
+  }
+  .contact-form button {
+    grid-column: 1;
+  }
+}
+/* Projects grid: flexible number of columns */
+.projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+    gap: 1em;
+    /* rows that align across columns (used by subgrid below) */
+    grid-auto-rows: auto;
+  }
+  
+  /* Nice defaults for project cards */
+  .projects > article img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+  }
+/* Each project card becomes a subgrid of the parent rows */
+.projects > article {
+    display: grid;
+    grid-template-rows: subgrid; /* use the parent row tracks */
+    grid-row: span 3;            /* this card uses 3 rows: h2, img, p */
+  }
+  
+  /* Tighter heading and predictable row content */
+  .projects > article h2 {
+    margin: 0 0 0.5rem 0;
+  }
+/* Global heading polish */
+:where(h1, h2, h3, h4, h5, h6) {
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  
+  /* Strong contrast: big page title */
+  h1 {
+    font-size: clamp(1.6rem, 3.5vw, 2rem); 
+    margin-block: 0.6em 0.3em;
+  }
+  
+  /* Reasonable project titles */
+  .projects h2 {
+    font-size: 1.30rem; 
+  }
+
+/* ===== Resume page only ===== */
+.resume header > p {
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem); /* ~a bit larger */
+  color: #444;
+  max-width: 65ch;
+}  
+
+  /* Strong section headings */
+  .resume h2 {
+    margin-top: 2rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid var(--cool-gray, #d9d9df);
+  }
+  
+  /* Tighter article spacing */
+  .resume section article {
+    padding-block: 0.85rem;
+    border-bottom: 1px dashed oklch(92% 0.01 200 / 0.9);
+  }
+  .resume section article:last-child {
+    border-bottom: none;
+  }
+  
+  /* Job / education headers: title on left, dates on right */
+  .resume section#work article > header,
+  .resume section#edu  article > header {
+    display: grid;
+    grid-template-columns: 1fr auto;  /* left grows, right fits dates */
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Title line tight + bold; dates styled subtly */
+  .resume section article > header h3 {
+    margin: 0;
+    font-weight: 700;
+  }
+  .resume section article > header p {
+    margin: 0;
+    color: #555;
+    white-space: nowrap;          /* keeps date range on one line */
+  }
+  
+  /* Lists inside entries: tighter rhythm */
+  .resume section ul {
+    margin: 0.25rem 0 0.25rem 1.1rem;
+  }
+  .resume section li { margin-block: 0.15rem; }
+  
+  /* Contact block */
+  .resume section#contact address a {
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid oklch(88% 0.02 200);
+  }
+  .resume section#contact address a:hover {
+    border-bottom-color: var(--color-accent, #3366ff);
+  }
+  
+  
+  /* Nice printout of the resume */
+  @media print {
+    nav, footer { display: none !important; }
+    body.resume { max-width: none; padding: 0.5in 0.6in; }
+    .resume section article { border: 0; break-inside: avoid; }
+    a[href^="http"]::after { content: " (" attr(href) ")"; font-weight: 400; }
+  }
+        
