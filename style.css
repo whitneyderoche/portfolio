@@ -9,13 +9,23 @@ body {
         margin-inline: auto;
         padding: 1rem;
         line-height: 1.6;
+        position: relative;
     }
   @media (min-width: 720px) {
     body { margin: 2.5rem auto; max-width: 60rem; }
   }
   
-  img { max-width: 100%; height: auto; display: block; }
-
+  .color-scheme {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.8em;            /* subtler */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 10;                 /* sit above nav/content if needed */
+  }
+  
   /* Give the home/hero photo a responsive target size range */
   .hero-photo {
     /* scales between 200px and 480px, based on viewport width */
@@ -45,6 +55,47 @@ body {
   @supports not (color: oklch(50% 0 0)) {
     :root { --cool-gray: #d9d9df; } /* fallback */
   }
+
+html {
+    color-scheme: light dark;   /* auto based on OS */
+    background: canvas;
+    color: canvastext;
+}
+
+/* default (LIGHT MODE) value: keep what you have now */
+nav {
+  --nav-border-color: var(--cool-gray); /* oklch(80% 0.03 200) from your :root */
+}
+
+/* use the variable wherever you draw lines */
+nav { border-bottom: 1px solid var(--nav-border-color); }
+
+nav a.current {
+  border-bottom: 0.4em solid var(--nav-border-color);
+  padding-bottom: calc(0.5em - 0.4em);
+}
+
+@media (prefers-color-scheme: dark) {
+  /* softer line on dark bg */
+  nav { --nav-border-color: oklch(50% 0.10 200 / 40%); }
+
+  /* optional: nicer hover bg in dark mode without touching your blue underline */
+  nav a:hover {
+    background: color-mix(in oklch, var(--color-accent), canvas 85%);
+  }
+}
+/* Fallback if color-mix/oklch isn't supported */
+@supports not (color: oklch(50% 0 0)) {
+  @media (prefers-color-scheme: dark) {
+    nav { --nav-border-color: rgba(160,170,185,0.4); }
+    nav a:hover { background: rgba(255,255,255,0.05); }
+  }
+}
+
+nav a:hover {
+  border-bottom: 0.4em solid var(--color-accent); /* your nice blue */
+  padding-bottom: calc(0.5em - 0.4em);
+}
 
 /* Step 2.1: treat the UL/LI as layout-free wrappers */
 nav ul,
